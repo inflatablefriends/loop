@@ -1,21 +1,5 @@
 
-
-Track = { }
-function Track:create(t)
-  t = t or {}
-  t.parent = self
-  t.objects = {}
-  return t
-end
-
-Daemon = { }
-function Daemon:create(d)
-  d = d or {}
-  d.parent = self
-  d.y = 0
-  return d 
-end
-
+-- The Street has an array of Track (left -> right)
 Street = { }
 function Street:create(s)
   s = s or { tracks = {} }

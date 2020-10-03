@@ -1,4 +1,4 @@
-require "street"
+require "street/_"
 
 function love.load()
   street = Street:create()
@@ -13,5 +13,4 @@ end
 function love.draw()
   print(table.getn(street.tracks))
   -- love.graphics.print(street.tracks, 400, 300)
-
 end
