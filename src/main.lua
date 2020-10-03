@@ -8,19 +8,19 @@ end
 function love.update(dt)
   local move = 10;
 
-  if love.keyboard.isDown("a") then
+  if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
     street.cam.position[1] = street.cam.position[1] - move;
   end
 
-  if love.keyboard.isDown("d") then
+  if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
     street.cam.position[1] = street.cam.position[1] + move;
   end
 
-  if love.keyboard.isDown("r") then
+  if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
     street.cam.position[2] = street.cam.position[2] + move;
   end
 
-  if love.keyboard.isDown("f") then
+  if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
     street.cam.position[2] = street.cam.position[2] - move;
   end
 
