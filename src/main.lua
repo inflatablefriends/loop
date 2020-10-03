@@ -40,6 +40,10 @@ function love.update(dt)
   elseif love.keyboard.isDown("f") then
     street.cam.position[3] = math.min(0, street.cam.position[3] - move);
   end
+
+  if street ~= nil then
+    street:update(dt)
+  end
 end
 
 

@@ -16,12 +16,14 @@ function Street:create(s)
 end
 
 function Street:addTrack(arg)
-  table.insert(self.tracks, Track:create(arg))
+  local track = Track:create(arg)
+  table.insert(self.tracks, track)
 
   -- the street goes from 10 - 90
   self.trackWidth = (winWidth * 0.8) / table.getn(self.tracks)
+  self.trackCount = table.getn(self.tracks)
 
-  return self.tracks[table.getn(self.tracks)]
+  return track
 end
 
 function Street:getTrackWidth()
@@ -62,12 +64,21 @@ function Street:load()
       table.insert(track.daemons, marker)
     end
   end
+
+  table.insert(self.tracks[2].daemons, Daemon:create("dude", 5))
+  table.insert(self.tracks[4].daemons, Daemon:create("dude", 8))
+  table.insert(self.tracks[3].daemons, Daemon:create("dude", 15))
+end
+
+function Street:update(dt)
+  for i = 1, self.trackCount do
+    local track = self.tracks[i]
+    track:update(dt)
+  end
 end
 
 function Street:draw()
-  local trackCount = table.getn(self.tracks)
-
-  for i = 1, trackCount do
+  for i = 1, self.trackCount do
     local track = self.tracks[i]    
 
     local ht = self.trackWidth / 2
@@ -79,7 +90,7 @@ function Street:draw()
     tbs = self.cam:projectToScreen{ posy[1] - ht, posy[2], posy[3] }
     tcs = self.cam:projectToScreen{ posy[1] + ht, posy[2], posy[3] }
 
-    local cOffset = (i - trackCount) * 0.04;
+    local cOffset = (i - self.trackCount) * 0.04;
     love.graphics.setColor(0.6 + cOffset, 0.6 + cOffset, 0.6 + cOffset)
     love.graphics.polygon("fill", {
       tas[1], tas[2],
@@ -92,6 +103,10 @@ function Street:draw()
       print(string.format("%d close %d %d far %d %d", i, posc[1], posc[2], posy[1], posy[2]))
       print(string.format("%d close %d %d far %d %d", i, tas[1], tas[2], tbs[1], tbs[2]))
     end
+  end
+
+  for i = 1, self.trackCount do
+    local track = self.tracks[i]    
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
