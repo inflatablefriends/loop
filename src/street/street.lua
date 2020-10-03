@@ -6,7 +6,8 @@ function Street:create(s)
   setmetatable(s, self)
   self.__index = self
 
-  self.cam = Camera:create{ 50, 50, 0 }
+   -- NB in world coordinates
+  self.cam = Camera:create{ winWidth / 2, -500, 800 }
 
   return s
 end
@@ -18,12 +19,11 @@ end
 
 -- Convert street coordinates into a 3d vector from 0, 0
 function Street:streetTo3d(streetX, streetY, streetZ)
-  local winWidth, winHeight = love.graphics.getDimensions()
 
   -- divide width into 100 units
   local xUnit = winWidth / 100
   local xTrackWidth = (xUnit * 80) / table.getn(self.tracks) -- the street goes from 10 - 90
-  local x = (streetX * xTrackWidth) + (xTrackWidth / 2) -- centre of the track
+  local x = (streetX * xTrackWidth) - (xTrackWidth / 2) -- centre of the track
 
   -- window axis is from top left corner
   -- street z ~= -winz
@@ -39,8 +39,13 @@ function Street:streetTo3d(streetX, streetY, streetZ)
 end
 
 function Street:streetToScreen(streetX, streetY, streetZ)
-  local x, y, z = self:streetTo3d(streetX, streetY, streetZ)
+  local x, y, z = self:streetTo3d(streetX, streetY, streetZ) 
   local u, v = self.cam:projectToScreen(x, y, z)
+
+  if debug then
+    love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
+  end
+  
   return u, v
 end
 
@@ -68,12 +73,10 @@ function Street:draw()
     local track = self.tracks[i]    
 
     u, v = self:streetToScreen(i, 0, 0)
-    love.graphics.print(i, u, v)
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
       u, v = self:streetToScreen(i, daemon.y, 0)
-      love.graphics.print(string.format("%d.%d", i, di), u, v)
     end
 
   end
