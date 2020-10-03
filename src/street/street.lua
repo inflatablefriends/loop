@@ -41,7 +41,11 @@ end
 function Street:streetToScreen(streetX, streetY, streetZ)
   local x, y, z = self:streetTo3d(streetX, streetY, streetZ) 
   local u, v = self.cam:projectToScreen(x, y, z)
-  love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
+
+  if debug then
+    love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
+  end
+  
   return u, v
 end
 

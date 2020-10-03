@@ -1,5 +1,8 @@
 require "street/_"
 
+-- global variable to toggle display of debugging info
+debug = false
+
 function love.load()
   winWidth, winHeight = love.graphics.getDimensions()
   street = Street:create()
@@ -38,13 +41,13 @@ end
 function love.keypressed(key)
   if key == "escape" then
     love.event.quit()
-  elseif key == "space" then
+  elseif key == "#" then
+    debug = not debug
     print(string.format("win: {%d, %d}", winWidth, winHeight));
     print(string.format("cam: {%d, %d, %d}", street.cam.position[1], street.cam.position[2], street.cam.position[3]))
   end
 end
 
 function love.draw()
-  -- print(table.getn(street.tracks))
   street:draw()
 end
