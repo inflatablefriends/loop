@@ -1,4 +1,5 @@
 require "street/camera"
 require "street/daemon"
+require "street/player"
 require "street/track"
 require "street/street"

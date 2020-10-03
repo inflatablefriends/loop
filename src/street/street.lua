@@ -61,6 +61,8 @@ function Street:load()
     end
   end
 
+  table.insert(self.tracks[4].daemons, Player:create())
+
   table.insert(self.tracks[2].daemons, Daemon:create("dude", 5))
   table.insert(self.tracks[4].daemons, Daemon:create("dude", 8))
   table.insert(self.tracks[3].daemons, Daemon:create("dude", 15))
@@ -107,7 +109,7 @@ function Street:draw()
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
       local pos = self:streetTo3d(vec3(i, daemon.y, 0))
-      daemon:draw(self.cam, pos)
+      daemon:draw(self, pos)
     end
   end
 end

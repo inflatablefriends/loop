@@ -15,7 +15,7 @@ function Daemon:create(type, y)
   d.type = type
   d.y = y
 
-  if d.type == "dude" then
+  if d.type == "dude" or d.type == "player" then
     d.image = love.graphics.newImage("sprites/lildude.png")
     local grid = anim8.newGrid(16, 18, d.image:getWidth(), d.image:getHeight())
     d.animation = anim8.newAnimation(grid("1-6",1), 0.1)
@@ -25,19 +25,20 @@ function Daemon:create(type, y)
 end
 
 function Daemon:update(dt)
-  if (self.type == "dude") then
+  if self.type == "dude" or self.type == "player" then
     self.animation:update(dt)
   end
 end
 
-function Daemon:draw(cam, posv3)
-  local uv = cam:projectToScreen(posv3)
-  local scale = 1 * (1 + (1000 / (posv3.y - cam.position.y)))
+function Daemon:draw(street, pos)
+  pos = pos:sub(vec3(street.trackWidth / 2, 0, 0))
+  local uv = street.cam:projectToScreen(pos)
+  local scale = 1 * (1 + (1000 / (pos.y - street.cam.position.y)))
 
   if self.type == "marker" and debug then
     love.graphics.setColor(0.9, 0, 0)
     love.graphics.circle("fill", uv.x, uv.y, scale)
-  elseif self.type == "dude" then
+  elseif self.type == "dude" or self.type == "player" then
     scale = scale * 2
     self.animation:draw(self.image, uv.x, uv.y - (scale * 16), 0, scale, scale)
   end
