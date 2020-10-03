@@ -10,7 +10,6 @@ function Track:create(t)
 end
 
 function Track:draw()
-
   print(self.index)
   for daemon = 1, table.getn(self.daemons) do
     print(daemon.index)

@@ -2,11 +2,7 @@ require "street/_"
 
 function love.load()
   street = Street:create()
-
-  for trackIndex = 1, 7 do
-    track = street:addTrack{ index = trackIndex }
-  end
-
+  street:load()
 end
 
 function love.update(dt)
@@ -20,12 +16,20 @@ function love.update(dt)
     street.cam.position[1] = street.cam.position[1] + move;
   end
 
-  if love.keyboard.isDown("w") then
+  if love.keyboard.isDown("r") then
     street.cam.position[2] = street.cam.position[2] + move;
   end
 
-  if love.keyboard.isDown("s") then
+  if love.keyboard.isDown("f") then
     street.cam.position[2] = street.cam.position[2] - move;
+  end
+
+  if love.keyboard.isDown("w") then
+    street.cam.position[3] = street.cam.position[3] + move;
+  end
+
+  if love.keyboard.isDown("s") then
+    street.cam.position[3] = street.cam.position[3] - move;
   end
 end
 

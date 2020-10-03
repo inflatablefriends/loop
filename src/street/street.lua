@@ -16,8 +16,8 @@ function Street:addTrack(arg)
   return self.tracks[table.getn(self.tracks)]
 end
 
--- Convert grid coordinates into a 3d vector from 0, 0
-function Street:gridTo3d(streetX, streetY, streetZ)
+-- Convert street coordinates into a 3d vector from 0, 0
+function Street:streetTo3d(streetX, streetY, streetZ)
   local winWidth, winHeight = love.graphics.getDimensions()
 
   -- divide width into 100 units
@@ -32,20 +32,50 @@ function Street:gridTo3d(streetX, streetY, streetZ)
   local y = (yUnit * streetY) + (yUnit / 2)
 
   -- z is offset along the track
-  local zUnit = xUnit;
+  local zUnit = xUnit * 10;
   local z = zUnit * streetZ
 
   return (xUnit * 10) + x, winHeight - y, z
 end
 
+function Street:streetToScreen(streetX, streetY, streetZ)
+  local x, y, z = self:streetTo3d(streetX, streetY, streetZ)
+  local u, v = self.cam:projectToScreen(x, y, z)
+  return u, v
+end
+
+
+function Street:load()
+  
+  for trackIndex = 1, 7 do
+    track = street:addTrack{ index = trackIndex }
+  end
+
+  -- Place some daemons so we can see how the camera's working
+  for x = 1, table.getn(self.tracks) do
+    local track = self.tracks[x]
+    
+    for z = 1, 50 do
+      local marker = Daemon:create("marker", z)
+      table.insert(track.daemons, marker)
+    end
+  end
+end
 
 function Street:draw()
+  local u, v -- screen coordinates
+
   for i = 1, table.getn(self.tracks) do
-    local track = self.tracks[i]
+    local track = self.tracks[i]    
 
-    local x, y, z = self:gridTo3d(i, 0, 0)
-    u, v = self.cam:projectToScreen(x, y, z)
-
+    u, v = self:streetToScreen(i, 0, 0)
     love.graphics.print(i, u, v)
+
+    for di = 1, table.getn(track.daemons) do
+      local daemon = track.daemons[di]
+      u, v = self:streetToScreen(i, 0, daemon.z)
+      love.graphics.print(string.format("%d.%d", i, di), u, v)
+    end
+
   end
 end
