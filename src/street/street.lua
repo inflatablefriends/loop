@@ -29,34 +29,22 @@ function Street:getTrackWidth()
 end
 
 -- Convert street coordinates into a 3d vector from 0, 0
-function Street:streetTo3d(streetX, streetY, streetZ)
+function Street:streetTo3d(vec3)
 
   -- divide width into 100 units
-  local x = (streetX * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
+  local x = (vec3[1] * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
 
   -- window axis is from top left corner
   -- street z ~= -winz
   -- again divide into 100 units
   local zUnit = winHeight / 100
-  local z = (zUnit * streetZ) + (zUnit / 2)
+  local z = (zUnit * vec3[3]) + (zUnit / 2)
 
   -- y is offset along the track
   local yUnit = winWidth / 10;
-  local y = yUnit * streetY
+  local y = yUnit * vec3[2]
 
   return {(winWidth * 0.1) + x, y, winHeight - z}
-end
-
--- Turn world coordinates into pixel coordinates in the window
-function Street:project(vec3)
-  local pos = self:streetTo3d(vec3[1], vec3[2], vec3[3]) 
-  local u, v = self.cam:projectToScreen(pos)
-
-  if debug then
-    -- love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
-  end
-  
-  return { u, v }
 end
 
 function Street:load()
@@ -77,20 +65,17 @@ function Street:load()
 end
 
 function Street:draw()
-  local u, v -- screen coordinates
   local trackCount = table.getn(self.tracks)
 
   for i = 1, trackCount do
     local track = self.tracks[i]    
 
-    u, v = self:project{i, 0, 0}
-
     local ht = self.trackWidth / 2
-    local posc = self:streetTo3d(i, 0, 0)
+    local posc = self:streetTo3d{i, 0, 0}
     tas = self.cam:projectToScreen{ posc[1] - ht, posc[2], posc[3] }
     tds = self.cam:projectToScreen{ posc[1] + ht, posc[2], posc[3] }
 
-    local posy = self:streetTo3d(i, 4000, 0)
+    local posy = self:streetTo3d{i, 4000, 0}
     tbs = self.cam:projectToScreen{ posy[1] - ht, posy[2], posy[3] }
     tcs = self.cam:projectToScreen{ posy[1] + ht, posy[2], posy[3] }
 
@@ -110,7 +95,8 @@ function Street:draw()
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
-      w = self:project{i, daemon.y, 0}
+      local pos = self:streetTo3d{i, daemon.y, 0}
+      daemon:draw(self.cam, pos)
     end
   end
 end

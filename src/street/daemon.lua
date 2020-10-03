@@ -15,3 +15,11 @@ function Daemon:create(type, y)
   d.y = y
   return d
 end
+
+function Daemon:draw(cam, posv3)
+  if self.type == "marker" and debug then
+    local uv = cam:projectToScreen(posv3)
+    love.graphics.setColor(0.9, 0, 0)
+    love.graphics.circle("fill", uv[1], uv[2], 1 * (1 + (1000 / (posv3[2] - cam.position[2]))))
+  end
+end
