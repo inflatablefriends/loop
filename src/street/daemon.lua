@@ -3,15 +3,15 @@
 -- - Each Daemon records its own offset (z) within its track
 
 Daemon = { }
-function Daemon:create(type, z)
+function Daemon:create(type, y)
   if type == nil then error("Daemon needs a type") end
-  if z == nil then error("Daemon needs an offset") end
+  if y == nil then error("Daemon needs an offset") end
 
   d = {}
   setmetatable(d, self)
   self.__index = self
   
   d.type = type
-  d.z = z
+  d.y = y
   return d
 end

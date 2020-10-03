@@ -26,16 +26,16 @@ function Street:streetTo3d(streetX, streetY, streetZ)
   local x = (streetX * xTrackWidth) + (xTrackWidth / 2) -- centre of the track
 
   -- window axis is from top left corner
-  -- street y ~= -winy
+  -- street z ~= -winz
   -- again divide into 100 units
-  local yUnit = winHeight / 100
-  local y = (yUnit * streetY) + (yUnit / 2)
+  local zUnit = winHeight / 100
+  local z = (zUnit * streetZ) + (zUnit / 2)
 
-  -- z is offset along the track
-  local zUnit = xUnit * 10;
-  local z = zUnit * streetZ
+  -- y is offset along the track
+  local yUnit = xUnit * 10;
+  local y = yUnit * streetY
 
-  return (xUnit * 10) + x, winHeight - y, z
+  return (xUnit * 10) + x, y, winHeight - z
 end
 
 function Street:streetToScreen(streetX, streetY, streetZ)
@@ -43,7 +43,6 @@ function Street:streetToScreen(streetX, streetY, streetZ)
   local u, v = self.cam:projectToScreen(x, y, z)
   return u, v
 end
-
 
 function Street:load()
   
@@ -55,8 +54,8 @@ function Street:load()
   for x = 1, table.getn(self.tracks) do
     local track = self.tracks[x]
     
-    for z = 1, 50 do
-      local marker = Daemon:create("marker", z)
+    for y = 1, 50 do
+      local marker = Daemon:create("marker", y)
       table.insert(track.daemons, marker)
     end
   end
@@ -73,7 +72,7 @@ function Street:draw()
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
-      u, v = self:streetToScreen(i, 0, daemon.z)
+      u, v = self:streetToScreen(i, daemon.y, 0)
       love.graphics.print(string.format("%d.%d", i, di), u, v)
     end
 
