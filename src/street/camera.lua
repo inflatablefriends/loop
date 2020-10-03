@@ -31,9 +31,6 @@ function Camera:projectToScreen(vec3)
   local x, y, z = vec3[1] - cx, vec3[2] - cy, vec3[3] - cz
 	local ox, oy, oz = self.theta[1], self.theta[2], self.theta[3]
   local ex, ey, ez = self.e[1], self.e[2], self.e[3]
-
-  local cos = math.cos
-  local sin = math.sin
   
 	local dx = cos(oy) * (sin(oz) * y + cos(oz) * x) - sin(oy) * z
 	local dy = sin(ox) * (cos(oy) * z + sin(oy) * (sin(oz) * y + cos(oz) * x)) + cos(ox) * (cos(oz) * y - sin(oz) * x)
