@@ -1,4 +1,5 @@
 
+
 -- The Street has an array of Track (left -> right)
 Street = { }
 function Street:create(s)
@@ -9,21 +10,29 @@ function Street:create(s)
    -- NB in world coordinates
   self.cam = Camera:create{ winWidth / 2, -500, 800 }
 
+  self.trackWidth = 0
+
   return s
 end
 
 function Street:addTrack(arg)
   table.insert(self.tracks, Track:create(arg))
+
+  -- the street goes from 10 - 90
+  self.trackWidth = (winWidth * 0.8) / table.getn(self.tracks)
+
   return self.tracks[table.getn(self.tracks)]
+end
+
+function Street:getTrackWidth()
+  return 
 end
 
 -- Convert street coordinates into a 3d vector from 0, 0
 function Street:streetTo3d(streetX, streetY, streetZ)
 
   -- divide width into 100 units
-  local xUnit = winWidth / 100
-  local xTrackWidth = (xUnit * 80) / table.getn(self.tracks) -- the street goes from 10 - 90
-  local x = (streetX * xTrackWidth) - (xTrackWidth / 2) -- centre of the track
+  local x = (streetX * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
 
   -- window axis is from top left corner
   -- street z ~= -winz
@@ -32,10 +41,10 @@ function Street:streetTo3d(streetX, streetY, streetZ)
   local z = (zUnit * streetZ) + (zUnit / 2)
 
   -- y is offset along the track
-  local yUnit = xUnit * 10;
+  local yUnit = winWidth / 10;
   local y = yUnit * streetY
 
-  return (xUnit * 10) + x, y, winHeight - z
+  return (winWidth * 0.1) + x, y, winHeight - z
 end
 
 function Street:streetToScreen(streetX, streetY, streetZ)
@@ -78,6 +87,5 @@ function Street:draw()
       local daemon = track.daemons[di]
       u, v = self:streetToScreen(i, daemon.y, 0)
     end
-
   end
 end
