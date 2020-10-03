@@ -47,7 +47,8 @@ function Street:streetTo3d(streetX, streetY, streetZ)
   return (winWidth * 0.1) + x, y, winHeight - z
 end
 
-function Street:streetToScreen(streetX, streetY, streetZ)
+-- Turn world coordinates into pixel coordinates in the window
+function Street:project(streetX, streetY, streetZ)
   local x, y, z = self:streetTo3d(streetX, streetY, streetZ) 
   local u, v = self.cam:projectToScreen(x, y, z)
 
@@ -81,11 +82,11 @@ function Street:draw()
   for i = 1, table.getn(self.tracks) do
     local track = self.tracks[i]    
 
-    u, v = self:streetToScreen(i, 0, 0)
+    u, v = self:project(i, 0, 0)
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
-      u, v = self:streetToScreen(i, daemon.y, 0)
+      u, v = self:project(i, daemon.y, 0)
     end
   end
 end
