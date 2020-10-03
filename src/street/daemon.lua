@@ -32,13 +32,13 @@ end
 
 function Daemon:draw(cam, posv3)
   local uv = cam:projectToScreen(posv3)
-  local scale = 1 * (1 + (1000 / (posv3[2] - cam.position[2])))
+  local scale = 1 * (1 + (1000 / (posv3.y - cam.position.y)))
 
   if self.type == "marker" and debug then
     love.graphics.setColor(0.9, 0, 0)
-    love.graphics.circle("fill", uv[1], uv[2], scale)
+    love.graphics.circle("fill", uv.x, uv.y, scale)
   elseif self.type == "dude" then
     scale = scale * 2
-    self.animation:draw(self.image, uv[1], uv[2] - (scale * 16), 0, scale, scale)
+    self.animation:draw(self.image, uv.x, uv.y - (scale * 16), 0, scale, scale)
   end
 end

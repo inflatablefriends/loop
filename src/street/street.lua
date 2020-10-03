@@ -8,7 +8,7 @@ function Street:create(s)
   self.__index = self
 
    -- NB in world coordinates
-  self.cam = Camera:create{ winWidth / 2, -500, 800 }
+  self.cam = Camera:create()
 
   self.trackWidth = 0
 
@@ -26,27 +26,23 @@ function Street:addTrack(arg)
   return track
 end
 
-function Street:getTrackWidth()
-  return 
-end
-
 -- Convert street coordinates into a 3d vector from 0, 0
 function Street:streetTo3d(vec3)
 
   -- divide width into 100 units
-  local x = (vec3[1] * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
+  local x = (vec3.x * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
 
   -- window axis is from top left corner
   -- street z ~= -winz
   -- again divide into 100 units
   local zUnit = winHeight / 100
-  local z = (zUnit * vec3[3]) + (zUnit / 2)
+  local z = (zUnit * vec3.z) + (zUnit / 2)
 
   -- y is offset along the track
-  local yUnit = winWidth / 10;
-  local y = yUnit * vec3[2]
+  local yUnit = winWidth / 10
+  local y = yUnit * vec3.y
 
-  return {(winWidth * 0.1) + x, y, winHeight - z}
+  return vec3((winWidth * 0.1) + x, y, winHeight - z)
 end
 
 function Street:load()
@@ -82,26 +78,26 @@ function Street:draw()
     local track = self.tracks[i]    
 
     local ht = self.trackWidth / 2
-    local posc = self:streetTo3d{i, 0, 0}
-    tas = self.cam:projectToScreen{ posc[1] - ht, posc[2], posc[3] }
-    tds = self.cam:projectToScreen{ posc[1] + ht, posc[2], posc[3] }
+    local posc = self:streetTo3d(vec3(i, 0, 0))
+    tas = self.cam:projectToScreen(vec3(posc.x - ht, posc.y, posc.z ))
+    tds = self.cam:projectToScreen(vec3(posc.x + ht, posc.y, posc.z ))
 
-    local posy = self:streetTo3d{i, 4000, 0}
-    tbs = self.cam:projectToScreen{ posy[1] - ht, posy[2], posy[3] }
-    tcs = self.cam:projectToScreen{ posy[1] + ht, posy[2], posy[3] }
+    local posy = self:streetTo3d(vec3(i, 4000, 0))
+    tbs = self.cam:projectToScreen(vec3(posy.x - ht, posy.y, posy.z ))
+    tcs = self.cam:projectToScreen(vec3(posy.x + ht, posy.y, posy.z ))
 
     local cOffset = (i - self.trackCount) * 0.04;
     love.graphics.setColor(0.6 + cOffset, 0.6 + cOffset, 0.6 + cOffset)
     love.graphics.polygon("fill", {
-      tas[1], tas[2],
-      tbs[1], tbs[2],
-      tcs[1], tcs[2],
-      tds[1], tds[2],
+      tas.x, tas.y,
+      tbs.x, tbs.y,
+      tcs.x, tcs.y,
+      tds.x, tds.y,
     });
 
     if debug then
-      print(string.format("%d close %d %d far %d %d", i, posc[1], posc[2], posy[1], posy[2]))
-      print(string.format("%d close %d %d far %d %d", i, tas[1], tas[2], tbs[1], tbs[2]))
+      print(string.format("%d close %d %d far %d %d", i, posc.x, posc.y, posy.x, posy.y))
+      print(string.format("%d close %d %d far %d %d", i, tas.x, tas.y, tbs.x, tbs.y))
     end
   end
 
@@ -110,7 +106,7 @@ function Street:draw()
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
-      local pos = self:streetTo3d{i, daemon.y, 0}
+      local pos = self:streetTo3d(vec3(i, daemon.y, 0))
       daemon:draw(self.cam, pos)
     end
   end
