@@ -44,19 +44,19 @@ function Street:streetTo3d(streetX, streetY, streetZ)
   local yUnit = winWidth / 10;
   local y = yUnit * streetY
 
-  return (winWidth * 0.1) + x, y, winHeight - z
+  return {(winWidth * 0.1) + x, y, winHeight - z}
 end
 
 -- Turn world coordinates into pixel coordinates in the window
-function Street:project(streetX, streetY, streetZ)
-  local x, y, z = self:streetTo3d(streetX, streetY, streetZ) 
-  local u, v = self.cam:projectToScreen(x, y, z)
+function Street:project(vec3)
+  local pos = self:streetTo3d(vec3[1], vec3[2], vec3[3]) 
+  local u, v = self.cam:projectToScreen(pos)
 
   if debug then
-    love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
+    -- love.graphics.print(string.format("{%d, %d, %d}", x, y, z), u, v)
   end
   
-  return u, v
+  return { u, v }
 end
 
 function Street:load()
@@ -78,15 +78,39 @@ end
 
 function Street:draw()
   local u, v -- screen coordinates
+  local trackCount = table.getn(self.tracks)
 
-  for i = 1, table.getn(self.tracks) do
+  for i = 1, trackCount do
     local track = self.tracks[i]    
 
-    u, v = self:project(i, 0, 0)
+    u, v = self:project{i, 0, 0}
+
+    local ht = self.trackWidth / 2
+    local posc = self:streetTo3d(i, 0, 0)
+    tas = self.cam:projectToScreen{ posc[1] - ht, posc[2], posc[3] }
+    tds = self.cam:projectToScreen{ posc[1] + ht, posc[2], posc[3] }
+
+    local posy = self:streetTo3d(i, 4000, 0)
+    tbs = self.cam:projectToScreen{ posy[1] - ht, posy[2], posy[3] }
+    tcs = self.cam:projectToScreen{ posy[1] + ht, posy[2], posy[3] }
+
+    local cOffset = (i - trackCount) * 0.04;
+    love.graphics.setColor(0.6 + cOffset, 0.6 + cOffset, 0.6 + cOffset)
+    love.graphics.polygon("fill", {
+      tas[1], tas[2],
+      tbs[1], tbs[2],
+      tcs[1], tcs[2],
+      tds[1], tds[2],
+    });
+
+    if debug then
+      print(string.format("%d close %d %d far %d %d", i, posc[1], posc[2], posy[1], posy[2]))
+      print(string.format("%d close %d %d far %d %d", i, tas[1], tas[2], tbs[1], tbs[2]))
+    end
 
     for di = 1, table.getn(track.daemons) do
       local daemon = track.daemons[di]
-      u, v = self:project(i, daemon.y, 0)
+      w = self:project{i, daemon.y, 0}
     end
   end
 end

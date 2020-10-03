@@ -28,11 +28,11 @@ function love.update(dt)
     street.cam.position[2] = street.cam.position[2] - move;
   end
 
-  if love.keyboard.isDown("w") then
+  if love.keyboard.isDown("r") then
     street.cam.position[3] = street.cam.position[3] + move;
   end
 
-  if love.keyboard.isDown("s") then
+  if love.keyboard.isDown("f") then
     street.cam.position[3] = street.cam.position[3] - move;
   end
 end

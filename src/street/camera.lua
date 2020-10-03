@@ -25,10 +25,10 @@ end
 -- V3 to origin of image plane from camera
 
 -- See https://en.wikipedia.org/wiki/3D_projection#Mathematical_formula
-function Camera:projectToScreen(wx, wy, wz)
+function Camera:projectToScreen(vec3)
   -- V3 from point to camera
   local cx, cy, cz = self.position[1], self.position[2], self.position[3]
-  local x, y, z = wx - cx, wy - cy, wz - cz
+  local x, y, z = vec3[1] - cx, vec3[2] - cy, vec3[3] - cz
 	local ox, oy, oz = self.theta[1], self.theta[2], self.theta[3]
   local ex, ey, ez = self.e[1], self.e[2], self.e[3]
 
@@ -42,5 +42,5 @@ function Camera:projectToScreen(wx, wy, wz)
 	local bx = ((ez * dx) / dz) + ex
 	local by = ((ez * dy) / dz) + ey
 
-	return bx, by
+	return { bx, by }
 end
