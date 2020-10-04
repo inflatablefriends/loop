@@ -20,30 +20,6 @@ function love.load()
 end
 
 function love.update(dt)
-  local move = 10
-
-  -- pan camera x (left/right)
-  if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-    street.cam.position.x = clamp(street.cam.position.x - move, 0, winWidth)
-  end
-
-  if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-    street.cam.position.x = clamp(street.cam.position.x + move, 0, winWidth)
-  end
-
-  -- pan camera y (forward/back)
-  if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-    street.cam.position.y = street.cam.position.y + move
-  elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-    street.cam.position.y = street.cam.position.y - move
-  end
-
-  -- pan camera z (up/down)
-  if love.keyboard.isDown("r") then
-    street.cam.position.z = math.min(0, street.cam.position.z + move)
-  elseif love.keyboard.isDown("f") then
-    street.cam.position.z = math.min(0, street.cam.position.z - move)
-  end
 
   if street ~= nil then
     street:update(dt)
@@ -57,7 +33,10 @@ function love.keypressed(key)
   elseif key == "#" then
     debug = not debug
     print(string.format("win: {%d, %d}", winWidth, winHeight))
-    print(string.format("cam: {%d, %d, %d}", street.cam.position:unpack()))
+  end
+
+  if street ~= nil then
+    street:keypressed(key)
   end
 end
 
