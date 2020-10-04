@@ -1,53 +1,56 @@
+require "global_utils"
+require "compound/_"
 require "street/_"
 
--- global variable to toggle display of debugging info
-debug = false
+local compound
+local street
+local game_mode
+local game_controller
+
+function changeGameMode(newMode)
+  game_mode = newMode
+  if newMode == "compound" then
+    game_controller = compound
+  elseif newMode == "street" then
+    game_controller = street
+  end
+end
 
 function love.load()
   winWidth, winHeight = love.graphics.getDimensions()
+  compound = Compound:create()
+  compound:load()
   street = Street:create()
   street:load()
+
+  changeGameMode("compound")
 end
 
 function love.update(dt)
-  local move = 10;
-
-  if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-    street.cam.position[1] = street.cam.position[1] - move;
-  end
-
-  if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-    street.cam.position[1] = street.cam.position[1] + move;
-  end
-
-  if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-    street.cam.position[2] = street.cam.position[2] + move;
-  end
-
-  if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-    street.cam.position[2] = street.cam.position[2] - move;
-  end
-
-  if love.keyboard.isDown("w") then
-    street.cam.position[3] = street.cam.position[3] + move;
-  end
-
-  if love.keyboard.isDown("s") then
-    street.cam.position[3] = street.cam.position[3] - move;
+  if game_controller ~= nil then
+    game_controller:update(dt)
   end
 end
 
-
 function love.keypressed(key)
+  if debug then
+    print(string.format("key: %s", key))
+  end
+
   if key == "escape" then
     love.event.quit()
   elseif key == "#" then
     debug = not debug
-    print(string.format("win: {%d, %d}", winWidth, winHeight));
-    print(string.format("cam: {%d, %d, %d}", street.cam.position[1], street.cam.position[2], street.cam.position[3]))
+    print(string.format("win: {%d, %d}", winWidth, winHeight))
+  end
+
+  if game_controller ~= nil then
+    game_controller:keypressed(key)
   end
 end
 
 function love.draw()
-  street:draw()
+  if game_controller ~= nil then
+    game_controller:draw(dt)
+  end
 end
