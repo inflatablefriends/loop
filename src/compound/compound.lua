@@ -6,24 +6,32 @@ function Compound:create()
   setmetatable(s, self)
   self.__index = self
 
-  s.message = "Hello from the compound. Press space to continue..."
-
   return s
 end
 
 function Compound:load()
+  StoryManager.load()
+  StoryManager.chooseStory()
 end
 
+-- N.B This function is only called when game_mode == "compound"
 function Compound:update(dt)
 end
 
 function Compound:keypressed(key)
   if key == "space" then
-    changeGameMode("street")
+    local lineIndex = StoryManager.advance()
+    if (lineIndex == nil) then
+      changeGameMode("street")
+    end
   end
 end
 
 function Compound:draw()
   -- TODO make this display better
-  love.graphics.print(self.message)
+  if StoryManager.currentLine ~= nil then
+    love.graphics.print(StoryManager.currentLine.who)
+    love.graphics.print(StoryManager.currentLine.text, 0, 40)
+  end
+
 end

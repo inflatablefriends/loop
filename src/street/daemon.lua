@@ -16,7 +16,7 @@ function Daemon:create(type, y)
   d.y = y
 
   if d.type == "dude" or d.type == "player" then
-    d.image = love.graphics.newImage("sprites/lildude.png")
+    d.image = love.graphics.newImage("res/lildude.png")
     local grid = anim8.newGrid(16, 18, d.image:getWidth(), d.image:getHeight())
     d.animation = anim8.newAnimation(grid("1-6",1), 0.1)
   end
