@@ -1,7 +1,7 @@
 local anim8 = require "lib/anim8"
 
 -- A Daemon represents the player, an object, another character, o anything else on the road
--- - Each Daemon records its own offset (z) within its track
+-- - Each Daemon records its own offset (y) within its track
 
 Daemon = { }
 function Daemon:create(type, y)
