@@ -1,6 +1,6 @@
 
 -- A Daemon represents the player, an object, another character, o anything else on the road
--- - Each Daemon records its own offset (z) within its track
+-- - Each Daemon records its own offset (y) within its track
 
 Daemon = { }
 function Daemon:create(type, y)
@@ -14,4 +14,22 @@ function Daemon:create(type, y)
   d.type = type
   d.y = y
   return d
+end
+
+
+function Daemon:draw()
+  if self.type == "litter" then
+    -- TODO draw an image of some litter
+
+  elif self.type == "animal" then
+    -- TODO draw an image of some animal
+
+  elif self.type == "child" then
+    -- TODO draw an image of some child
+  
+  elif self.type == "person" then
+    -- TODO draw an image of some person
+  end
+
+
 end
