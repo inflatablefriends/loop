@@ -48,7 +48,7 @@ end
 function Street:load()
   
   for trackIndex = 1, 7 do
-    track = street:addTrack{ index = trackIndex }
+    track = self:addTrack{ index = trackIndex }
   end
 
   -- Place some daemons so we can see how the camera's working
@@ -73,25 +73,25 @@ function Street:update(dt)
 
   -- pan camera x (left/right)
   if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-    street.cam.position.x = clamp(street.cam.position.x - move, 0, winWidth)
+    self.cam.position.x = clamp(self.cam.position.x - move, 0, winWidth)
   end
 
   if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-    street.cam.position.x = clamp(street.cam.position.x + move, 0, winWidth)
+    self.cam.position.x = clamp(self.cam.position.x + move, 0, winWidth)
   end
 
   -- pan camera y (forward/back)
   if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-    street.cam.position.y = street.cam.position.y + move
+    self.cam.position.y = self.cam.position.y + move
   elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-    street.cam.position.y = street.cam.position.y - move
+    self.cam.position.y = self.cam.position.y - move
   end
 
   -- pan camera z (up/down)
   if love.keyboard.isDown("r") then
-    street.cam.position.z = math.min(0, street.cam.position.z + move)
+    self.cam.position.z = math.min(0, self.cam.position.z + move)
   elseif love.keyboard.isDown("f") then
-    street.cam.position.z = math.min(0, street.cam.position.z - move)
+    self.cam.position.z = math.min(0, self.cam.position.z - move)
   end
 
   for i = 1, self.trackCount do
@@ -102,7 +102,7 @@ end
 
 function Street:keypressed(key)  
   if key == "#" then
-    print(string.format("cam: {%d, %d, %d}", street.cam.position:unpack()))
+    print(string.format("cam: {%d, %d, %d}", self.cam.position:unpack()))
   end
 end
 

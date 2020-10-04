@@ -1,33 +1,42 @@
-
-local cpml = require "lib/cpml"
+require "global_utils"
+require "compound/_"
 require "street/_"
 
--- global variable to toggle display of debugging info
-debug = false
-cos = math.cos
-sin = math.sin
-vec2 = cpml.vec2
-vec3 = cpml.vec3
+local compound
+local street
+local game_mode
+local game_controller
 
-function clamp(val, min, max)
-  return math.max(min, math.min(val, max))
+function changeGameMode(newMode)
+  game_mode = newMode
+  if newMode == "compound" then
+    game_controller = compound
+  elseif newMode == "street" then
+    game_controller = street
+  end
 end
 
 function love.load()
   winWidth, winHeight = love.graphics.getDimensions()
+  compound = Compound:create()
+  compound:load()
   street = Street:create()
   street:load()
+
+  changeGameMode("compound")
 end
 
 function love.update(dt)
-
-  if street ~= nil then
-    street:update(dt)
+  if game_controller ~= nil then
+    game_controller:update(dt)
   end
 end
 
-
 function love.keypressed(key)
+  if debug then
+    print(string.format("key: %s", key))
+  end
+
   if key == "escape" then
     love.event.quit()
   elseif key == "#" then
@@ -35,11 +44,13 @@ function love.keypressed(key)
     print(string.format("win: {%d, %d}", winWidth, winHeight))
   end
 
-  if street ~= nil then
-    street:keypressed(key)
+  if game_controller ~= nil then
+    game_controller:keypressed(key)
   end
 end
 
 function love.draw()
-  street:draw()
+  if game_controller ~= nil then
+    game_controller:draw(dt)
+  end
 end
