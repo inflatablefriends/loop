@@ -1,5 +1,4 @@
 local lunajson = require "lib/lunajson/lunajson"
-local inspect = require "lib/inspect"
 
 -- The StoryManager is a way to manage chains of dialogue in stories.
 
@@ -63,15 +62,17 @@ StoryManager.advance = function()
   if nextIndex == nil then
     StoryManager.currentLine = nil
     StoryManager.currentIndex = nil
+    StoryManager.currentStory = nil
   else
     local nextLine = currentLines[nextIndex]
     StoryManager.currentLine = nextLine
     StoryManager.currentIndex = nextIndex
+    
+    if debug then
+      print(string.format("Loaded story %s line %d", StoryManager.currentStory, nextIndex))
+    end
   end
 
-  if debug then
-    print(string.format("Loaded story %s line %d", currentStory, nextIndex or "nil"))
-  end
 
   return StoryManager.currentIndex
 end

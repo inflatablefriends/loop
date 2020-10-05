@@ -7,10 +7,10 @@ function Street:create(s)
   setmetatable(s, self)
   self.__index = self
 
-   -- NB in world coordinates
-  self.cam = Camera:create()
-
-  self.trackWidth = 0
+  self.cam = Camera:create() -- NB in world coordinates  
+  self.trackWidth = 0 -- width in pixels of the track
+  self.world = wf.newWorld(0, 1000, true)
+  self.daemons = {}
 
   return s
 end
@@ -28,7 +28,6 @@ end
 
 -- Convert street coordinates into a 3d vector from 0, 0
 function Street:streetTo3d(vec3)
-
   -- divide width into 100 units
   local x = (vec3.x * self.trackWidth) - (self.trackWidth / 2) -- centre of the track
 
@@ -45,7 +44,15 @@ function Street:streetTo3d(vec3)
   return vec3((winWidth * 0.1) + x, y, winHeight - z)
 end
 
-function Street:load()
+function Street:addDaemon(position, daemon)
+  table.insert(self.daemons, daemon)
+  daemon.position = self:streetTo3d(position)
+end
+
+function Street:load()  
+  local groundLevel = self:streetTo3d(vec3(0,0,0))
+  self.ground = self.world:newLineCollider(-2000, groundLevel.z, 2000, groundLevel.z)
+  self.ground:setType('static')
   
   for trackIndex = 1, 7 do
     track = self:addTrack{ index = trackIndex }
@@ -56,16 +63,14 @@ function Street:load()
     local track = self.tracks[x]
     
     for y = 1, 50 do
-      local marker = Daemon:create("marker", y)
-      table.insert(track.daemons, marker)
+      self:addDaemon(vec3(x, y, 0), Daemon:create("marker"))
     end
   end
 
-  table.insert(self.tracks[4].daemons, Player:create())
-
-  table.insert(self.tracks[2].daemons, Daemon:create("dude", 5))
-  table.insert(self.tracks[4].daemons, Daemon:create("dude", 8))
-  table.insert(self.tracks[3].daemons, Daemon:create("dude", 15))
+  self:addDaemon(vec3(4, 0, 0), Player:create())
+  self:addDaemon(vec3(2, 5, 0), Daemon:create("dude"))
+  self:addDaemon(vec3(3, 15, 0), Daemon:create("dude"))
+  self:addDaemon(vec3(4, 8, 0), Daemon:create("dude"))
 end
 
 function Street:update(dt)
@@ -89,26 +94,42 @@ function Street:update(dt)
 
   -- pan camera z (up/down)
   if love.keyboard.isDown("r") then
-    self.cam.position.z = math.min(0, self.cam.position.z + move)
+    self.cam.position.z = math.max(0, self.cam.position.z + move)
   elseif love.keyboard.isDown("f") then
-    self.cam.position.z = math.min(0, self.cam.position.z - move)
+    self.cam.position.z = math.max(0, self.cam.position.z - move)
   end
 
   for i = 1, self.trackCount do
     local track = self.tracks[i]
     track:update(dt)
   end
+
+  for j = 1, table.getn(self.daemons) do
+    local daemon = self.daemons[j]
+    daemon:update(dt)
+
+    if daemon.position.y == 0 and daemon.body == nil then
+      daemon:addToWorld(self)
+    end
+  end
+
+  self.world:update(dt)
 end
 
 function Street:keypressed(key)  
   if key == "#" then
     print(string.format("cam: {%d, %d, %d}", self.cam.position:unpack()))
   end
+
+  for j = 1, table.getn(self.daemons) do
+    local daemon = self.daemons[j]
+    daemon:keypressed(key)
+  end
 end
 
 function Street:draw()
   for i = 1, self.trackCount do
-    local track = self.tracks[i]    
+    local track = self.tracks[i]
 
     local ht = self.trackWidth / 2
     local posc = self:streetTo3d(vec3(i, 0, 0))
@@ -128,19 +149,19 @@ function Street:draw()
       tds.x, tds.y,
     });
 
-    if debug then
-      print(string.format("%d close %d %d far %d %d", i, posc.x, posc.y, posy.x, posy.y))
-      print(string.format("%d close %d %d far %d %d", i, tas.x, tas.y, tbs.x, tbs.y))
-    end
+    -- if debug then
+    --   print(string.format("%d close %d %d far %d %d", i, posc.x, posc.y, posy.x, posy.y))
+    --   print(string.format("%d close %d %d far %d %d", i, tas.x, tas.y, tbs.x, tbs.y))
+    -- end
   end
 
-  for i = 1, self.trackCount do
-    local track = self.tracks[i]    
+  
+  for j = 1, table.getn(self.daemons) do
+    local daemon = self.daemons[j]
+    daemon:draw(self)
+  end
 
-    for di = 1, table.getn(track.daemons) do
-      local daemon = track.daemons[di]
-      local pos = self:streetTo3d(vec3(i, daemon.y, 0))
-      daemon:draw(self, pos)
-    end
+  if debug then
+    self.world:draw()
   end
 end

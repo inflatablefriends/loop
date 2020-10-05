@@ -1,4 +1,6 @@
 -- Assorted global helper functions and variables
+wf = require 'lib/windfield'
+inspect = require "lib/inspect"
 
 local cpml = require "lib/cpml"
 
