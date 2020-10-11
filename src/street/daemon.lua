@@ -11,6 +11,9 @@ function Daemon:create(type)
   self.__index = self
   
   d.type = type
+  d.position = nil
+  d.dy = 0
+  d.speed = 0
 
   if d.type == "dude" or d.type == "player" then
     d.image = love.graphics.newImage("res/lildude.png")
@@ -60,15 +63,10 @@ function Daemon:draw(street)
   local uv = street.cam:projectToScreen(pos)
   local scale = 1 * (1 + (1000 / (pos.y - street.cam.position.y)))
 
-  if self.type == "marker" and debug then
-    love.graphics.setColor(0.9, 0, 0)
-    love.graphics.circle("fill", uv.x, uv.y, scale)
-  else
-    if self.image ~= nil and self.animation ~= nil then
-      scale = scale * 2
-      local xOffset = -street.trackWidth / 2
-      local yOffset = -scale * self.height
-      self.animation:draw(self.image, uv.x + xOffset, uv.y + yOffset, 0, scale, scale)
-    end
+  if self.image ~= nil and self.animation ~= nil then
+    scale = scale * 2
+    local xOffset = -street.trackWidth / 2
+    local yOffset = -scale * self.height
+    self.animation:draw(self.image, uv.x + xOffset, uv.y + yOffset, 0, scale, scale)
   end
 end

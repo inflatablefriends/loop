@@ -63,14 +63,25 @@ function Street:load()
     local track = self.tracks[x]
     
     for y = 1, 50 do
-      self:addDaemon(vec3(x, y, 0), Daemon:create("marker"))
+      self:addDaemon(vec3(x, y, 0), Tile:create())
     end
   end
 
-  self:addDaemon(vec3(4, 0, 0), Player:create())
+  local q = Player:create()
+  self.player = q
+  self:addDaemon(vec3(4, 0, 0), q)
   self:addDaemon(vec3(2, 5, 0), Daemon:create("dude"))
   self:addDaemon(vec3(3, 15, 0), Daemon:create("dude"))
   self:addDaemon(vec3(4, 8, 0), Daemon:create("dude"))
+end
+
+function Street:loadTiles()
+  local maxY = self.player.position.y + 400
+  for i = 1, table.getn(self.daemons) do
+    local daemon = self.daemons[i]
+    if daemon.position.y < self.camera.position.y then
+    end
+  end
 end
 
 function Street:update(dt)
@@ -86,11 +97,11 @@ function Street:update(dt)
   end
 
   -- pan camera y (forward/back)
-  if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-    self.cam.position.y = self.cam.position.y + move
-  elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-    self.cam.position.y = self.cam.position.y - move
-  end
+  -- if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
+  --   self.cam.position.y = self.cam.position.y + move
+  -- elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
+  --   self.cam.position.y = self.cam.position.y - move
+  -- end
 
   -- pan camera z (up/down)
   if love.keyboard.isDown("r") then
@@ -114,6 +125,8 @@ function Street:update(dt)
   end
 
   self.world:update(dt)
+  
+  self.cam.position.y = self.player.position.y - 400
 end
 
 function Street:keypressed(key)  
